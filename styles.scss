@@ -1,0 +1,738 @@
+// ============================================
+// SCSS для Online IT Courses Catalog
+// Архітектура 7-1 + BEM + Адаптив + Міксини
+// ============================================
+
+// ===== 1. ABSTRACTS (змінні, функції, міксини) =====
+
+// Кольори
+$primary-color: #2563eb;
+$secondary-color: #0ea5e9;
+$accent-color: #f59e0b;
+$text-dark: #1f2937;
+$text-light: #6b7280;
+$bg-light: #f9fafb;
+$bg-white: #ffffff;
+$border-color: #e5e7eb;
+$success-color: #10b981;
+$rating-star: #fbbf24;
+
+// Типографіка
+$font-primary: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+$font-size-base: 16px;
+$font-size-small: 14px;
+$font-size-large: 18px;
+$font-size-h1: 2.5rem;
+$font-size-h2: 2rem;
+$font-size-h3: 1.5rem;
+$font-size-h4: 1.25rem;
+
+// Відступи
+$spacing-xs: 0.5rem;
+$spacing-sm: 1rem;
+$spacing-md: 1.5rem;
+$spacing-lg: 2rem;
+$spacing-xl: 3rem;
+
+// Брейкпоінти
+$breakpoint-mobile: 500px;
+$breakpoint-tablet: 800px;
+$breakpoint-desktop: 1200px;
+
+// Тіні
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+
+// Радіуси
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 12px;
+
+// Функції
+@function rem($px) {
+  @return calc($px / 16) * 1rem;
+}
+
+@function color-mix($color1, $color2, $weight: 50%) {
+  @return mix($color1, $color2, $weight);
+}
+
+// Міксини для адаптиву (3 брейкпоінти)
+@mixin mobile {
+  @media (max-width: #{$breakpoint-mobile - 1px}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: $breakpoint-mobile) and (max-width: #{$breakpoint-tablet - 1px}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: $breakpoint-tablet) {
+    @content;
+  }
+}
+
+@mixin respond-to($breakpoint) {
+  @media (min-width: $breakpoint) {
+    @content;
+  }
+}
+
+// Міксини для grid/flex/контейнер
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@mixin container($max-width: 1200px) {
+  max-width: $max-width;
+  margin: 0 auto;
+  padding: 0 $spacing-md;
+}
+
+@mixin grid($columns: 1, $gap: $spacing-md) {
+  display: grid;
+  grid-template-columns: repeat($columns, 1fr);
+  gap: $gap;
+}
+
+// Міксини для типографіки
+@mixin heading($size, $weight: 700) {
+  font-size: $size;
+  font-weight: $weight;
+  line-height: 1.2;
+  color: $text-dark;
+}
+
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Міксин для кнопок
+@mixin button($bg-color, $text-color: $bg-white, $hover-color: darken($bg-color, 10%)) {
+  display: inline-block;
+  padding: $spacing-sm $spacing-lg;
+  background-color: $bg-color;
+  color: $text-color;
+  text-decoration: none;
+  border: none;
+  border-radius: $radius-md;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background-color: $hover-color;
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Міксин для карток
+@mixin card {
+  background: $bg-white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  padding: $spacing-md;
+  transition: box-shadow 0.3s ease;
+  
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+}
+
+// Rem-конвертер міксин
+@mixin font-size($px) {
+  font-size: rem($px);
+}
+
+// Color-mix function (спрощена версія)
+@mixin color-mix-bg($color1, $color2, $opacity: 0.5) {
+  background-color: rgba($color1, $opacity);
+  background-image: linear-gradient(to bottom, rgba($color2, 0.1), rgba($color2, 0));
+}
+
+
+// ===== 2. BASE (reset, typography) =====
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: $font-size-base;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: $font-primary;
+  color: $text-dark;
+  line-height: 1.6;
+  background-color: $bg-light;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: $primary-color;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  
+  &:hover {
+    color: $secondary-color;
+  }
+}
+
+h1 {
+  @include heading($font-size-h1);
+}
+
+h2 {
+  @include heading($font-size-h2);
+}
+
+h3 {
+  @include heading($font-size-h3);
+}
+
+h4 {
+  @include heading($font-size-h4);
+}
+
+p {
+  margin-bottom: $spacing-sm;
+  color: $text-light;
+}
+
+
+// ===== 3. LAYOUT (header, footer, main, sections) =====
+
+header {
+  background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+  color: $bg-white;
+  padding: $spacing-md 0;
+  box-shadow: $shadow-md;
+  
+  h1 {
+    @include container;
+    color: $bg-white;
+    margin-bottom: $spacing-sm;
+    font-size: $font-size-h2;
+    
+    @include desktop {
+      font-size: $font-size-h1;
+    }
+  }
+  
+  nav {
+    @include container;
+    
+    ul {
+      list-style: none;
+      @include flex-between;
+      flex-wrap: wrap;
+      gap: $spacing-sm;
+      
+      @include mobile {
+        @include grid(2, $spacing-xs);
+      }
+      
+      @include desktop {
+        justify-content: flex-start;
+        gap: $spacing-lg;
+      }
+    }
+    
+    li {
+      flex: 1;
+      text-align: center;
+      
+      @include desktop {
+        flex: none;
+      }
+    }
+    
+    a {
+      color: $bg-white;
+      font-weight: 600;
+      padding: $spacing-xs $spacing-sm;
+      border-radius: $radius-sm;
+      display: block;
+      transition: background-color 0.3s ease;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: $bg-white;
+      }
+    }
+  }
+}
+
+main {
+  @include container;
+  padding-top: $spacing-xl;
+  padding-bottom: $spacing-xl;
+  min-height: 70vh;
+}
+
+footer {
+  background-color: $text-dark;
+  color: $bg-white;
+  text-align: center;
+  padding: $spacing-lg 0;
+  margin-top: $spacing-xl;
+  
+  p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+  }
+}
+
+section {
+  margin-bottom: $spacing-xl;
+}
+
+aside {
+  @include card;
+  margin-top: $spacing-lg;
+  
+  h3 {
+    color: $primary-color;
+    margin-bottom: $spacing-md;
+  }
+  
+  ul {
+    list-style: none;
+    
+    li {
+      padding: $spacing-xs 0;
+      border-bottom: 1px solid $border-color;
+      color: $text-light;
+      
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+}
+
+
+// ===== 4. COMPONENTS (buttons, cards, forms, tables) =====
+
+// Кнопки
+.button,
+button[type="submit"] {
+  @include button($primary-color);
+}
+
+.button--secondary {
+  @include button($secondary-color);
+}
+
+.button--accent {
+  @include button($accent-color);
+}
+
+// Картки курсів
+.course-card {
+  @include card;
+  
+  img {
+    border-radius: $radius-md;
+    margin-bottom: $spacing-md;
+  }
+  
+  h3 {
+    color: $primary-color;
+    margin-bottom: $spacing-sm;
+  }
+  
+  p {
+    @include font-size(15);
+    color: $text-light;
+  }
+}
+
+// Таблиці
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: $bg-white;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+  
+  @include mobile {
+    font-size: $font-size-small;
+  }
+  
+  thead {
+    background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+    color: $bg-white;
+    
+    th {
+      padding: $spacing-md;
+      text-align: left;
+      font-weight: 600;
+      
+      @include mobile {
+        padding: $spacing-sm;
+      }
+    }
+  }
+  
+  tbody {
+    tr {
+      border-bottom: 1px solid $border-color;
+      transition: background-color 0.2s ease;
+      
+      &:hover {
+        background-color: rgba($primary-color, 0.05);
+      }
+      
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+    
+    td {
+      padding: $spacing-md;
+      
+      @include mobile {
+        padding: $spacing-sm;
+      }
+      
+      a {
+        font-weight: 600;
+        color: $primary-color;
+        
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+
+// Форми
+form {
+  @include card;
+  max-width: 600px;
+  margin: 0 auto;
+  
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: $spacing-xs;
+    color: $text-dark;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  select {
+    width: 100%;
+    padding: $spacing-sm;
+    border: 2px solid $border-color;
+    border-radius: $radius-md;
+    font-size: $font-size-base;
+    margin-bottom: $spacing-md;
+    transition: border-color 0.3s ease;
+    
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+    }
+    
+    &:required:invalid {
+      border-color: lighten($accent-color, 20%);
+    }
+  }
+  
+  input[type="checkbox"] {
+    margin-right: $spacing-xs;
+    cursor: pointer;
+  }
+  
+  button[type="submit"] {
+    width: 100%;
+    margin-top: $spacing-md;
+    padding: $spacing-md;
+    font-size: $font-size-large;
+  }
+}
+
+// Picture/responsive images
+picture {
+  display: block;
+  margin-bottom: $spacing-md;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+  
+  img {
+    border-radius: 0;
+  }
+}
+
+
+// ===== 5. PAGES (специфічні стилі для сторінок) =====
+
+// Home page
+.home-hero {
+  text-align: center;
+  margin-bottom: $spacing-xl;
+  
+  picture {
+    margin-bottom: $spacing-lg;
+  }
+  
+  h2 {
+    color: $primary-color;
+    margin-bottom: $spacing-md;
+  }
+  
+  p {
+    @include font-size(18);
+    color: $text-dark;
+  }
+}
+
+.top-categories {
+  @include card;
+  
+  h3 {
+    color: $primary-color;
+    margin-bottom: $spacing-md;
+  }
+  
+  ul {
+    @include grid(2, $spacing-sm);
+    
+    @include desktop {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    
+    li {
+      @include flex-center;
+      background: linear-gradient(135deg, rgba($primary-color, 0.1) 0%, rgba($secondary-color, 0.1) 100%);
+      padding: $spacing-md;
+      border-radius: $radius-md;
+      font-weight: 600;
+      color: $primary-color;
+      transition: transform 0.3s ease;
+      
+      &:hover {
+        transform: scale(1.05);
+        background: linear-gradient(135deg, rgba($primary-color, 0.2) 0%, rgba($secondary-color, 0.2) 100%);
+      }
+    }
+  }
+}
+
+// Course details page
+article {
+  @include card;
+  margin-bottom: $spacing-lg;
+  
+  h2 {
+    color: $primary-color;
+    margin-bottom: $spacing-md;
+  }
+  
+  picture {
+    margin: $spacing-md 0;
+  }
+  
+  p {
+    margin-bottom: $spacing-sm;
+    
+    strong {
+      color: $text-dark;
+    }
+  }
+}
+
+.reviews {
+  article {
+    background: rgba($bg-light, 0.5);
+    margin-bottom: $spacing-md;
+    
+    h4 {
+      color: $secondary-color;
+      margin-bottom: $spacing-xs;
+    }
+    
+    p {
+      color: $text-light;
+      font-style: italic;
+    }
+  }
+}
+
+// Enrollment page
+.enrollment-form {
+  h2 {
+    text-align: center;
+    color: $primary-color;
+    margin-bottom: $spacing-lg;
+  }
+}
+
+
+// ===== 6. THEMES (можна додати темну тему) =====
+
+// Опціонально: темна тема
+@media (prefers-color-scheme: dark) {
+  // Можна додати стилі для темної теми
+}
+
+
+// ===== 7. UTILITIES (допоміжні класи) =====
+
+.text-center {
+  text-align: center;
+}
+
+.mt-sm {
+  margin-top: $spacing-sm;
+}
+
+.mt-md {
+  margin-top: $spacing-md;
+}
+
+.mt-lg {
+  margin-top: $spacing-lg;
+}
+
+.mb-sm {
+  margin-bottom: $spacing-sm;
+}
+
+.mb-md {
+  margin-bottom: $spacing-md;
+}
+
+.mb-lg {
+  margin-bottom: $spacing-lg;
+}
+
+.p-sm {
+  padding: $spacing-sm;
+}
+
+.p-md {
+  padding: $spacing-md;
+}
+
+.p-lg {
+  padding: $spacing-lg;
+}
+
+.hidden-mobile {
+  @include mobile {
+    display: none;
+  }
+}
+
+.hidden-desktop {
+  @include desktop {
+    display: none;
+  }
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  @include flex-center;
+}
+
+.flex-between {
+  @include flex-between;
+}
+
+.grid-2 {
+  @include grid(2);
+}
+
+.grid-3 {
+  @include grid(3);
+}
+
+// Rating stars utility
+.rating {
+  color: $rating-star;
+  font-size: $font-size-large;
+}
+
+
+// ===== АДАПТИВНІСТЬ (responsive images) =====
+
+// Webp/srcset підтримка закладена в HTML через <picture>
+// Адаптив закладений через міксини mobile/tablet/desktop
+
+// Додаткові адаптивні правила
+@include mobile {
+  main {
+    padding-top: $spacing-md;
+    padding-bottom: $spacing-md;
+  }
+  
+  section {
+    margin-bottom: $spacing-md;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+}
+
+@include tablet {
+  main {
+    padding-top: $spacing-lg;
+    padding-bottom: $spacing-lg;
+  }
+}
+
+@include desktop {
+  .courses-grid {
+    @include grid(2, $spacing-lg);
+  }
+  
+  .course-detail-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: $spacing-lg;
+  }
+}
